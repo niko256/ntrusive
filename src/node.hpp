@@ -49,7 +49,7 @@ enum class LinkMode : uint8_t {
      * @warning USE ONLY when object lifetime strictly exceeds list lifetime.
      * User guarantees safety.
      */
-    NoLink, /* unsafe */
+    Raw, /* unsafe */
 };
 
 /**
@@ -109,7 +109,7 @@ class IntrusiveListNode {
     IntrusiveListNode* next_{nullptr};
 
     [[no_unique_address]]
-    std::conditional_t<Mode == LinkMode::NoLink, std::false_type, bool> is_linked_{};
+    std::conditional_t<Mode == LinkMode::Raw, std::false_type, bool> is_linked_{};
 
     template <typename, typename>
     friend class IntrusiveList;
