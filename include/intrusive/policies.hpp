@@ -15,7 +15,7 @@ concept LinkPolicy = requires(typename P::State s, const typename P::State cs) {
 /* ------------------------------------------------------------------- */
 
 
-struct NoLink {
+struct NoTrackPolicy {
     struct State {};
 
     static constexpr void on_link(State&) noexcept {}
@@ -27,7 +27,7 @@ struct NoLink {
     static constexpr const char* name() noexcept { return "NoLink"; }
 };
 
-struct Link {
+struct TrackingPolicy {
     struct State {
         bool is_linked_ = false;
     };
@@ -49,21 +49,21 @@ struct Link {
 
 struct NoOpHandler {
     template <typename Hook>
-    static constexpr void on_destroy(Hook&) noexcept {}
-};
-
-struct AssertHandler {
-    template <typename Hook>
-    static constexpr void on_destroy(Hook& h) noexcept {
-        assert(!h.is_linked() && "Destroying object still in list!! Remove first or use AutoUnlink.");
-    }
+    static void on_destroy(Hook&) noexcept {}
 };
 
 struct AutoUnlinkHandler {
     template <typename Hook>
-    static constexpr void on_destroy(Hook& h) noexcept {
+    static void on_destroy(Hook& h) noexcept {
         if (h.is_linked()) {
             h.unlink();
         }
+    }
+};
+
+struct AssertNotLinkedHandler {
+    template <typename Hook>
+    static void on_destroy(Hook& h) noexcept {
+        assert(!h.is_linked() && "Destroying object still in list!! Remove explicitly.");
     }
 };
