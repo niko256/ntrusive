@@ -2,6 +2,9 @@
 
 #include <concepts>
 
+
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/
+
 /**
  * ...[CONTRACT]...
  */
@@ -12,11 +15,11 @@ concept LinkPolicy = requires(typename P::State s, const typename P::State cs) {
     { P::is_linked(cs) } noexcept -> std::same_as<bool>;
 };
 
-/* ------------------------------------------------------------------- */
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/
 
 /**
  * @section DANGER_AND_SAFETY
- * The biggest risk in intrusive containers is the 'dangling pointer'
+ * The biggest risk in intrusive containers is a 'dangling pointer'
  * If a Node is destroyed while still being linked in a list
  * => the list becomes corrupted => undefined behavior
  *
@@ -48,16 +51,20 @@ struct TrackingPolicy {
         s.is_linked_ = false;
     }
 
-    static constexpr bool is_linked(const State& s) noexcept { return s.is_linked_; }
+    static constexpr bool is_linked(const State& s) noexcept {
+        return s.is_linked_;
+    }
 
-    static constexpr const char* name() noexcept { return "Link"; }
+    static constexpr const char* name() noexcept {
+        return "Link";
+    }
 };
 
 /*
  * ...
  */
 
-/* ------------------------------------------------------------------- */
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/
 
 struct NoOpHandler {
     template <typename Hook>
@@ -79,3 +86,5 @@ struct AssertNotLinkedHandler {
         assert(!h.is_linked() && "Destroying object still in list!! Remove explicitly.");
     }
 };
+
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/

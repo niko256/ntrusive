@@ -10,7 +10,9 @@
  * Inherit from this class to make your object linkable.
  *
  */
-template <typename Tag = void, LinkPolicy Policy = TrackingPolicy, typename Handler = AutoUnlinkHandler>
+template <typename Tag = void,
+          LinkPolicy Policy = TrackingPolicy,
+          typename Handler = AutoUnlinkHandler>
 class IntrusiveListNode : public NodeBase {
   public:
     using tag_type = Tag;
@@ -30,7 +32,7 @@ class IntrusiveListNode : public NodeBase {
     IntrusiveListNode(IntrusiveListNode&&) noexcept = delete;
     IntrusiveListNode& operator=(IntrusiveListNode&&) noexcept = delete;
 
-    /* ------------------------------------------------------------------- */
+    /*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/
 
     /**
      * @brief Checks if this node is currently in a list.
@@ -52,9 +54,9 @@ class IntrusiveListNode : public NodeBase {
     /**
      * @brief Link this node this with two others
      */
-    void link_between(IntrusiveListNode* prev, IntrusiveListNode* next) noexcept;
+    void link_between(NodeBase* prev, NodeBase* next) noexcept;
 
-    /* ------------------------------------------------------------------- */
+    /*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/
 
   private:
     [[no_unique_address]]
@@ -67,7 +69,7 @@ class IntrusiveListNode : public NodeBase {
     friend class ListIterator;
 };
 
-/* ------------------------------------------------------------------- */
+/*---*---*---*---*---*---*---*---IMPL---*---*---*---*---*---*---*---*---*/
 
 template <typename Tag, LinkPolicy Policy, typename Handler>
 IntrusiveListNode<Tag, Policy, Handler>::~IntrusiveListNode() {
@@ -100,13 +102,15 @@ constexpr void IntrusiveListNode<Tag, Policy, Handler>::set_linked() noexcept {
 }
 
 template <typename Tag, LinkPolicy Policy, typename Handler>
-void IntrusiveListNode<Tag, Policy, Handler>::link_between(
-    IntrusiveListNode* prev, IntrusiveListNode* next) noexcept {
+void IntrusiveListNode<Tag, Policy, Handler>::link_between(NodeBase* prev,
+                                                           NodeBase* next) noexcept {
 
     /* ................... */
 
-    link_between(prev, next);
+    link_between_base(prev, next);
     set_linked();
 
     /* ................... */
 }
+
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/

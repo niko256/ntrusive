@@ -1,10 +1,13 @@
 #pragma once
 
 struct NodeBase {
-    NodeBase* prev_;
-    NodeBase* next_;
 
-    /* ------------------------------------------------------------------- */
+    /*---*---*---*---*---*---*/
+
+    NodeBase* prev_{nullptr};
+    NodeBase* next_{nullptr};
+
+    /*---*---*---*---*---*---*/
 
     [[nodiscard]]
     NodeBase* next_node() noexcept;
@@ -27,7 +30,7 @@ struct NodeBase {
      * Before: prev <-> next
      * After:  prev <-> this <-> next
      */
-    void link_between(NodeBase* prev, NodeBase* next) noexcept;
+    void link_between_base(NodeBase* prev, NodeBase* next) noexcept;
 
     /**
      * @brief Unlinks this node from its neighbors.
@@ -78,10 +81,10 @@ struct NodeBase {
      *   Source: ... <-> before_first <-> last <-> ...
      *   Dest:   ... <-> before_pos <-> [first...actual_last] <-> pos <-> ...
      */
-    void transfer_range(NodeBase* pos, NodeBase* first, NodeBase* last) noexcept;
+    static void transfer_range(NodeBase* pos, NodeBase* first, NodeBase* last) noexcept;
 };
 
-/* ------------------------------------------------------------------- */
+/*---*---*---*---*---*---*---*---IMPL---*---*---*---*---*---*---*---*---*/
 
 inline NodeBase* NodeBase::next_node() noexcept {
     return next_;
@@ -107,7 +110,7 @@ inline void NodeBase::set_prev(NodeBase* p) noexcept {
     prev_ = p;
 }
 
-inline void NodeBase::link_between(NodeBase* prev, NodeBase* next) noexcept {
+inline void NodeBase::link_between_base(NodeBase* prev, NodeBase* next) noexcept {
     prev_ = prev;
     next_ = next;
     prev->next_ = this;
@@ -156,3 +159,5 @@ inline void transfer_range(NodeBase* pos, NodeBase* first, NodeBase* last) noexc
     actual_last->next_ = pos;
     pos->prev_ = actual_last;
 }
+
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/

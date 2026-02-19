@@ -1,68 +1,74 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
-PROJECT(IntrusiveList
-  DESCRIPTION "Header-only intrusive doubly-linked list"
+PROJECT(
+  ntrusive
+  VERSION 0.1.0
   LANGUAGES CXX
+  DESCRIPTION "Header-only intrusive doubly-linked list"
+  HOMEPAGE_URL "https://github.com/niko256/ntrusive"
 )
 
-OPTION(INTRUSIVE_LIST_BUILD_TESTS "Build unit tests" ON)
+SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# *---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---* #
+
+SET(NTRUSIVE_IS_ROOT_PROJECT OFF)
+IF (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+  SET(NTRUSIVE_IS_ROOT_PROJECT ON)
+ENDIF()
+
+OPTION(NTRUSIVE_BUILD_TESTS
+  "Build unit tests"
+  ${NTRUSIVE_IS_ROOT_PROJECT}
+)
+
+# *---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---* #
+
 OPTION(INTRUSIVE_LIST_ENABLE_ASAN "Enable AddressSanitizer" OFF)
 OPTION(INTRUSIVE_LIST_ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer" OFF)
 
-SET(CMAKE_CXX_STANDARD 20)
-SET(CMAKE_CXX_STANDARD_REQUIRED ON)
-SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# *---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---* #
 
-# ------------------------------------------------------------- #
+ADD_LIBRARY(ntrusive INTERFACE)
 
-FILE(GLOB HEADERS include/intrusive/*.hpp)
-
-ADD_LIBRARY(intrusive_list INTERFACE)
+ADD_LIBRARY(ntrusive::ntrusive ALIAS ntrusive)
 
 
-TARGET_SOURCES(intrusive_list INTERFACE ${HEADERS})
-
-TARGET_INCLUDE_DIRECTORIES(intrusive_list INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+TARGET_INCLUDE_DIRECTORIES(
+  ntrusive
+  INTERFACE
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
-TARGET_COMPILE_FEATURES(intrusive_list INTERFACE cxx_std_20)
+TARGET_COMPILE_FEATURES(
+  ntrusive
+  INTERFACE
+  cxx_std_20
+)
 
-# ------------------------------------------------------------- #
+# *---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---* #
 
-if(INTRUSIVE_LIST_BUILD_TESTS)
+SET(NTRUSIVE_HEADERS
+  include/ntrusive/base_node.hpp
+  include/ntrusive/intrusive.hpp
+  include/ntrusive/iterator.hpp
+  include/ntrusive/list.hpp
+  include/ntrusive/node.hpp
+  include/ntrusive/policies.hpp
+)
+
+TARGET_SOURCES(
+  ntrusive
+  INTERFACE
+  ${NTRUSIVE_HEADERS}
+)
+
+# *---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---* #
+
+IF(NTRUSIVE_BUILD_TESTS)
   enable_testing()
-  add_subdirectory(tests)
-endif()
+  ADD_SUBDIRECTORY(tests)
+ENDIF()
 
-# ------------------------------------------------------------- #
-
-include(GNUInstallDirs)
-
-install(DIRECTORY include/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(TARGETS intrusive_list
-    EXPORT intrusive_list-targets
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(EXPORT intrusive_list-targets
-    FILE intrusive_list-config.cmake
-    NAMESPACE intrusive::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/intrusive_list
-)
-
-INCLUDE(CMakePackageConfigHelpers)
-WRITE_BASIC_PACKAGE_VERSION_FILE(
-    "${CMAKE_CURRENT_BINARY_DIR}/intrusive_list-config-version.cmake"
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
-)
-
-INSTALL(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/intrusive_list-config-version.cmake"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/intrusive_list
-)
+# *---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---* #

@@ -7,12 +7,12 @@
 #include "policies.hpp"
 
 
-/* ------------------------------------------------------------------- */
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/
 
-template <typename Tag>
+template <typename Tag = void>
 using NoLinkHook = IntrusiveListNode<Tag, NoTrackPolicy, NoOpHandler>;
 
-template <typename Tag>
+template <typename Tag = void>
 using AutoUnlinkHook = IntrusiveListNode<Tag, TrackingPolicy, AutoUnlinkHandler>;
 
-/* ------------------------------------------------------------------- */
+/*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*/
